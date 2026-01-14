@@ -141,8 +141,25 @@
     // ----------------------------------------------
 
     // ログの更新
-    const logDiv = document.getElementById('log');
-    logDiv.innerHTML = `<div>ダイス【${dice}】！ ${damage}ダメージ！</div>` + logDiv.innerHTML;
+    // --- ログ更新の処理をここから差し替え ---
+const logDiv = document.getElementById('log');
+
+// 1. 新しいメッセージを作成
+const newMessage = (dice === 6) ? 
+    `<div style="color: gold; font-weight: bold;">【神格覚醒】ヴォイドレックスに20ダメージ！</div>` : 
+    `<div>運命の出目【${dice}】：${damage}ダメージ！</div>`;
+
+// 2. 今あるログの「中身」を配列（リスト）に分解する
+let currentLogs = logDiv.innerHTML.split('</div>');
+// 空の要素を取り除く
+currentLogs = currentLogs.filter(item => item.trim() !== "").map(item => item + "</div>");
+
+// 3. 一番上に新しいメッセージを追加
+currentLogs.unshift(newMessage);
+
+// 4. 上から3つだけを切り取って、画面に戻す
+logDiv.innerHTML = currentLogs.slice(0, 3).join('');
+// --------------------------------------
 }
     </script>
 </body>
