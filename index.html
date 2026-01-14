@@ -118,26 +118,32 @@
 
     <script>
         let bossHP = 100;
-        function playTurn() {
-            const dice = Math.floor(Math.random() * 6) + 1;
-            let damage = dice * 2; // シンプルにダイスの2倍ダメージ
-            let message = `ダイスの目は【${dice}】！ 乙女たちが${damage}のダメージを与えた！`;
-            
-            if (dice === 6) {
-                damage = 20; // 6が出たら「神格覚醒」！
-                message = "【神格覚醒】クリティカル！ ヴォイドレックスを切り裂く一撃：20ダメージ！";
-            }
+       function playTurn() {
+    const dice = Math.floor(Math.random() * 6) + 1;
+    let damage = dice * 2; 
+    
+    if (dice === 6) {
+        damage = 20; // クリティカル
+    }
 
-            bossHP -= damage;
-            if (bossHP <= 0) {
-                bossHP = 0;
-                message = "ヴォイドレックスは虚無へと消えた……。世界の夜明けだ！";
-            }
+    bossHP -= damage;
+    if (bossHP <= 0) bossHP = 0;
 
-            document.getElementById('hp-display').innerText = `BOSS HP: ${bossHP}`;
-            const logDiv = document.getElementById('log');
-            logDiv.innerHTML += `<div>${message}</div>`;
-        }
+    // --- ここからが「バーを減らす」ための追加部分 ---
+    
+    // 1. HPの数字を更新
+    document.getElementById('hp-display').innerText = `BOSS HP: ${bossHP} / 100`;
+
+    // 2. 赤いバー（hp-bar-fill）の横幅を、残りのHP％に合わせる
+    const hpPercent = (bossHP / 100) * 100; 
+    document.getElementById('hp-bar-fill').style.width = hpPercent + "%";
+
+    // ----------------------------------------------
+
+    // ログの更新
+    const logDiv = document.getElementById('log');
+    logDiv.innerHTML = `<div>ダイス【${dice}】！ ${damage}ダメージ！</div>` + logDiv.innerHTML;
+}
     </script>
 </body>
 </html>
