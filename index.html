@@ -93,6 +93,15 @@
     0% { background-color: rgba(255, 0, 0, 0.5); }
     100% { background-color: transparent; }
 }
+
+/* 攻撃中のカードの演出 */
+.attacking {
+    border: 3px solid #fff !important;
+    box-shadow: 0 0 30px #fff !important;
+    transform: translateY(-20px); /* 上に跳ね上がる */
+    transition: all 0.1s;
+}
+        
         
     </style>
 </head>
@@ -134,56 +143,90 @@
     <button class="dice-btn" onclick="playTurn()">運命の六面体（ダイスロール）！</button>
     <div id="log">--- 戦闘記録（ログ） ---</div>
 
-    <script>
-        let bossHP = 100;
-        let playerHP = 50; // プレイヤーの初期体力
-function playTurn() {
-    if (playerHP <= 0 || bossHP <= 0) return; // どちらかが倒れていたら何もしない
+<script>
+    // --- 初期設定（ステータス） ---
+    let bossHP = 100;
+    let playerHP = 50;
+    let turnCount = 0; // 誰のターンかを数える
 
-    const dice = Math.floor(Math.random() * 6) + 1;
-    let damage = dice * 2;
-    if (dice === 6) damage = 20;
+    function playTurn() {
+        // どちらかが倒れていたら動かさない
+        if (playerHP <= 0 || bossHP <= 0) return;
 
-    // --- プレイヤーの攻撃 ---
-    bossHP -= damage;
-    if (bossHP < 0) bossHP = 0;
+        // 1. 攻撃者（カード）を特定する
+        const cards = document.querySelectorAll('.card');
+        const attackerIndex = turnCount % cards.length; // 0, 1, 0, 1...と繰り返す
+        const currentCard = cards[attackerIndex];
+        const attackerName = currentCard.querySelector('.card-name').innerText;
 
-    // --- ボスの反撃（ダイスが 1 か 2 の時） ---
-    let counterDamage = 0;
-    if (dice <= 2) {
-        counterDamage = 10;
-        playerHP -= counterDamage;
-        if (playerHP < 0) playerHP = 0;
+        // 2. カードを光らせて跳ねさせる演出
+        currentCard.classList.add('attacking');
+        setTimeout(() => {
+            currentCard.classList.remove('attacking');
+        }, 200);
+
+        // 3. ダイスを振る
+        const dice = Math.floor(Math.random() * 6) + 1;
+        let damage = dice * 2;
+        let isCritical = false;
+
+        if (dice === 6) {
+            damage = 20;
+            isCritical = true;
+        }
+
+        // 4. ボスへダメージ
+        bossHP -= damage;
+        if (bossHP < 0) bossHP = 0;
+
+        // 5. ボスの反撃（ダイスが 1 か 2 の時）
+        let counterDamage = 0;
+        if (dice <= 2) {
+            counterDamage = 10;
+            playerHP -= counterDamage;
+            if (playerHP < 0) playerHP = 0;
+        }
+
+        // 6. 画面（HPバーと数字）の更新
+        // ボス側
+        document.getElementById('hp-bar-fill').style.width = (bossHP / 100 * 100) + "%";
+        document.getElementById('hp-display').innerText = `BOSS HP: ${bossHP} / 100`;
+        
+        // プレイヤー側
+        document.getElementById('player-hp-bar-fill').style.width = (playerHP / 50 * 100) + "%";
+        document.getElementById('player-hp-display').innerText = `HP: ${playerHP} / 50`;
+
+        // 7. ログの更新（最新3行のみ）
+        const logDiv = document.getElementById('log');
+        let logMsg = "";
+        
+        if (isCritical) {
+            logMsg = `<div style="color: gold; font-weight: bold;">★${attackerName}の極大魔法！ 20ダメージ！</div>`;
+        } else {
+            logMsg = `<div>${attackerName}の攻撃！【${dice}】：${damage}ダメ！</div>`;
+        }
+
+        if (counterDamage > 0) {
+            logMsg = `<div style="color: #ff4500;">（反撃！）ヴォイドレックスの虚無：10ダメ！</div>` + logMsg;
+        }
+
+        let logs = logDiv.innerHTML.split('</div>').filter(t => t.trim() !== "").map(t => t + "</div>");
+        logs.unshift(logMsg);
+        logDiv.innerHTML = logs.slice(0, 3).join('');
+
+        // 8. ターンを進める
+        turnCount++;
+
+        // 9. 決着判定
+        if (bossHP <= 0) {
+            setTimeout(() => { alert("『虚無を喰らう絶望の残滓・ヴォイドレックス』を完全に消滅させました！"); }, 500);
+        } else if (playerHP <= 0) {
+            setTimeout(() => { 
+                alert("目の前が真っ暗になった……。世界は虚無に包まれた。");
+                location.reload(); // ページをリロードして最初から
+            }, 500);
+        }
     }
-
-    // 画面の更新（ボス側）
-    document.getElementById('hp-bar-fill').style.width = bossHP + "%";
-    document.getElementById('hp-display').innerText = `BOSS HP: ${bossHP} / 100`;
-
-    // 画面の更新（プレイヤー側）
-    document.getElementById('player-hp-bar-fill').style.width = (playerHP / 50 * 100) + "%";
-    document.getElementById('player-hp-display').innerText = `HP: ${playerHP} / 50`;
-
-    // ログの更新
-    const logDiv = document.getElementById('log');
-    let logMsg = `<div>ダイス【${dice}】：${damage}ダメージ！</div>`;
-    if (counterDamage > 0) {
-        logMsg = `<div style="color: #ff4500;">『虚無の波動』！ ${counterDamage}の反撃を受けた！</div>` + logMsg;
-    }
-    
-    let logs = logDiv.innerHTML.split('</div>').filter(t => t.trim() !== "").map(t => t + "</div>");
-    logs.unshift(logMsg);
-    logDiv.innerHTML = logs.slice(0, 3).join('');
-
-    // 勝敗判定
-    if (bossHP <= 0) {
-        alert("ヴォイドレックスを討伐！世界は救われた。");
-    } else if (playerHP <= 0) {
-        alert("あなたは虚無に呑み込まれた……（GAME OVER）");
-        // リロードしてやり直し
-        location.reload();
-    }
-}
-    </script>
+</script>
 </body>
 </html>
