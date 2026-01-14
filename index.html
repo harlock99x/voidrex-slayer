@@ -146,12 +146,12 @@ function playTurn() {
     logs.unshift(newMessage); 
     logDiv.innerHTML = logs.slice(0, 3).join(''); // 上から3つだけ表示
 
-    // 5. 討伐判定
-    if (bossHP <= 0) {
-        alert("『虚無を喰らう絶望の残滓・ヴォイドレックス』を討伐完了！");
-        // 倒したらHPをリセットして復活させるなら
-        // bossHP = 100; 
-    }
+// 討伐時の演出例
+if (bossHP <= 0) {
+    document.getElementById('boss-img').style.filter = "grayscale(100%) brightness(0%)";
+    document.getElementById('boss-img').style.transition = "all 2s";
+    logDiv.innerHTML = "<h2 style='color:cyan;'>世界に光が戻った……</h2>" + logDiv.innerHTML;
+}
 }
     </script>
 </body>
