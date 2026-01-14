@@ -32,11 +32,19 @@
     margin-bottom: 5px;
 }
 .card-illust {
-    height: 80px;
-    background: #333; /* ここに後で画像が入る */
-    margin-bottom: 5px;
-} 
-      
+    width: 100%;       /* 枠の横幅いっぱい */
+    height: 100px;     /* 高さを固定（お好みで調整してください） */
+    overflow: hidden;  /* はみ出た部分は隠す */
+    border-radius: 5px;
+    background: #333;  /* 画像がない時の色 */
+}
+
+/* 中に入れる画像自体の指定 */
+.card-illust img {
+    width: 100%;       /* 枠の横幅に合わせる */
+    height: 100%;      /* 枠の高さに合わせる */
+    object-fit: cover; /* 縦横比を維持したまま、隙間なく埋める（これが重要！） */
+}
     </style>
 </head>
 <body>
