@@ -8,12 +8,53 @@
         .boss-name { color: #9370db; text-shadow: 0 0 10px #f00; font-size: 2em; }
         #log { margin-top: 20px; border: 1px solid #444; padding: 10px; height: 100px; overflow-y: scroll; }
         .dice-btn { background: #4b0082; color: white; padding: 15px 30px; border: none; font-size: 1.2em; cursor: pointer; }
+   
+    /* カードの見た目 */
+.card-container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+}
+.card {
+    width: 120px;
+    height: 180px;
+    border: 2px solid #silver;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #1a1a1a, #4b0082); /* 闇属性っぽいグラデ */
+    padding: 5px;
+    box-shadow: 0 0 10px rgba(147, 112, 219, 0.5);
+}
+.card-name {
+    font-size: 0.8em;
+    font-weight: bold;
+    border-bottom: 1px solid #fff;
+    margin-bottom: 5px;
+}
+.card-illust {
+    height: 80px;
+    background: #333; /* ここに後で画像が入る */
+    margin-bottom: 5px;
+} 
+      
     </style>
 </head>
 <body>
     <h1 class="boss-name">『虚無を喰らう絶望の残滓・ヴォイドレックス』</h1>
     <div id="hp-display">BOSS HP: 100</div>
     <hr>
+    <div class="card-container">
+    <div class="card">
+        <div class="card-name">《次元の観測者》ノエル</div>
+        <div class="card-illust">【Illust】</div>
+        <div class="card-power">Power: 2</div>
+    </div>
+    <div class="card">
+        <div class="card-name">《聖光の執行官》セラフィナ</div>
+        <div class="card-illust">【Illust】</div>
+        <div class="card-power">Power: 6</div>
+    </div>
+</div>
     <button class="dice-btn" onclick="playTurn()">運命の六面体（ダイスロール）！</button>
     <div id="log">--- 戦闘記録（ログ） ---</div>
 
