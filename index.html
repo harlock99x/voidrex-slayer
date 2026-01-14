@@ -118,48 +118,40 @@
 
     <script>
         let bossHP = 100;
-       function playTurn() {
+function playTurn() {
+    // 1. ダイスを振る
     const dice = Math.floor(Math.random() * 6) + 1;
     let damage = dice * 2; 
-    
-    if (dice === 6) {
-        damage = 20; // クリティカル
-    }
+    if (dice === 6) damage = 20;
 
+    // 2. HPを減らす（ここが止まってると死にません！）
     bossHP -= damage;
-    if (bossHP <= 0) bossHP = 0;
+    if (bossHP < 0) bossHP = 0;
 
-    // --- ここからが「バーを減らす」ための追加部分 ---
-    
-    // 1. HPの数字を更新
+    // 3. 画面の見た目（バーと数字）を更新
+    const hpBar = document.getElementById('hp-bar-fill');
+    if (hpBar) {
+        hpBar.style.width = (bossHP / 100 * 100) + "%";
+    }
     document.getElementById('hp-display').innerText = `BOSS HP: ${bossHP} / 100`;
 
-    // 2. 赤いバー（hp-bar-fill）の横幅を、残りのHP％に合わせる
-    const hpPercent = (bossHP / 100) * 100; 
-    document.getElementById('hp-bar-fill').style.width = hpPercent + "%";
+    // 4. 最新3行だけのログ処理
+    const logDiv = document.getElementById('log');
+    const newMessage = (dice === 6) ? 
+        `<div style="color: gold;">【神格覚醒】${damage}ダメ！</div>` : 
+        `<div>ダイス【${dice}】：${damage}ダメ！</div>`;
 
-    // ----------------------------------------------
+    // 今あるログを取得して新しいのを先頭に追加
+    let logs = logDiv.innerHTML.split('</div>').filter(t => t.trim() !== "").map(t => t + "</div>");
+    logs.unshift(newMessage); 
+    logDiv.innerHTML = logs.slice(0, 3).join(''); // 上から3つだけ表示
 
-    // ログの更新
-    // --- ログ更新の処理をここから差し替え ---
-const logDiv = document.getElementById('log');
-
-// 1. 新しいメッセージを作成
-const newMessage = (dice === 6) ? 
-    `<div style="color: gold; font-weight: bold;">【神格覚醒】ヴォイドレックスに20ダメージ！</div>` : 
-    `<div>運命の出目【${dice}】：${damage}ダメージ！</div>`;
-
-// 2. 今あるログの「中身」を配列（リスト）に分解する
-let currentLogs = logDiv.innerHTML.split('</div>');
-// 空の要素を取り除く
-currentLogs = currentLogs.filter(item => item.trim() !== "").map(item => item + "</div>");
-
-// 3. 一番上に新しいメッセージを追加
-currentLogs.unshift(newMessage);
-
-// 4. 上から3つだけを切り取って、画面に戻す
-logDiv.innerHTML = currentLogs.slice(0, 3).join('');
-// --------------------------------------
+    // 5. 討伐判定
+    if (bossHP <= 0) {
+        alert("『虚無を喰らう絶望の残滓・ヴォイドレックス』を討伐完了！");
+        // 倒したらHPをリセットして復活させるなら
+        // bossHP = 100; 
+    }
 }
     </script>
 </body>
