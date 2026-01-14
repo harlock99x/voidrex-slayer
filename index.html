@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>ヴォイドレックス・スレイヤー</title>
+    <style>
+        body { background-color: #000; color: #fff; font-family: 'serif'; text-align: center; }
+        .boss-name { color: #9370db; text-shadow: 0 0 10px #f00; font-size: 2em; }
+        #log { margin-top: 20px; border: 1px solid #444; padding: 10px; height: 100px; overflow-y: scroll; }
+        .dice-btn { background: #4b0082; color: white; padding: 15px 30px; border: none; font-size: 1.2em; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1 class="boss-name">『虚無を喰らう絶望の残滓・ヴォイドレックス』</h1>
+    <div id="hp-display">BOSS HP: 100</div>
+    <hr>
+    <button class="dice-btn" onclick="playTurn()">運命の六面体（ダイスロール）！</button>
+    <div id="log">--- 戦闘記録（ログ） ---</div>
+
+    <script>
+        let bossHP = 100;
+        function playTurn() {
+            const dice = Math.floor(Math.random() * 6) + 1;
+            let damage = dice * 2; // シンプルにダイスの2倍ダメージ
+            let message = `ダイスの目は【${dice}】！ 乙女たちが${damage}のダメージを与えた！`;
+            
+            if (dice === 6) {
+                damage = 20; // 6が出たら「神格覚醒」！
+                message = "【神格覚醒】クリティカル！ ヴォイドレックスを切り裂く一撃：20ダメージ！";
+            }
+
+            bossHP -= damage;
+            if (bossHP <= 0) {
+                bossHP = 0;
+                message = "ヴォイドレックスは虚無へと消えた……。世界の夜明けだ！";
+            }
+
+            document.getElementById('hp-display').innerText = `BOSS HP: ${bossHP}`;
+            const logDiv = document.getElementById('log');
+            logDiv.innerHTML += `<div>${message}</div>`;
+        }
+    </script>
+</body>
+</html>
